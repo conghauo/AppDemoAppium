@@ -14,6 +14,8 @@ import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class sign_up extends AppCompatActivity implements View.OnClickListener {
     private NestedScrollView nestedScrollView;
@@ -34,7 +36,7 @@ public class sign_up extends AppCompatActivity implements View.OnClickListener {
     private InputValidation inputValidation;
     private MyDataBase databaseHelper;
     private Account user;
-
+    private TextView tvResult ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +74,8 @@ public class sign_up extends AppCompatActivity implements View.OnClickListener {
         appCompatButtonRegister = (AppCompatButton) findViewById(R.id.appCompatButtonRegister);
 
         appCompatTextViewLoginLink = (AppCompatTextView) findViewById(R.id.appCompatTextViewLoginLink);
-
+        tvResult = (TextView) findViewById(R.id.result);
+        tvResult.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -105,7 +108,11 @@ public class sign_up extends AppCompatActivity implements View.OnClickListener {
         switch (v.getId()) {
 
             case R.id.appCompatButtonRegister:
-                postDataToSQLite();
+                try {
+                    postDataToSQLite();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 break;
 
             case R.id.appCompatTextViewLoginLink:
@@ -117,21 +124,41 @@ public class sign_up extends AppCompatActivity implements View.OnClickListener {
     /**
      * This method is to validate the input text fields and post data to SQLite
      */
-    private void postDataToSQLite() {
+    private void postDataToSQLite() throws InterruptedException {
         if (!inputValidation.isInputEditTextFilled(textInputEditTextName, textInputLayoutName, getString(R.string.error_message_name))) {
+            tvResult.setVisibility(View.VISIBLE);
+            tvResult.setText(getString(R.string.error_message_name));
+            Thread.sleep(Toast.LENGTH_LONG);
+            tvResult.setVisibility(View.INVISIBLE);
             return;
         }
         if (!inputValidation.isInputEditTextFilled(textInputEditTextEmail, textInputLayoutEmail, getString(R.string.error_message_email))) {
+            tvResult.setVisibility(View.VISIBLE);
+            tvResult.setText(getString(R.string.error_message_email));
+            Thread.sleep(Toast.LENGTH_LONG);
+            tvResult.setVisibility(View.INVISIBLE);
             return;
         }
         if (!inputValidation.isInputEditTextEmail(textInputEditTextEmail, textInputLayoutEmail, getString(R.string.error_message_email))) {
+            tvResult.setVisibility(View.VISIBLE);
+            tvResult.setText( getString(R.string.error_message_email));
+            Thread.sleep(Toast.LENGTH_LONG);
+            tvResult.setVisibility(View.INVISIBLE);
             return;
         }
         if (!inputValidation.isInputEditTextFilled(textInputEditTextPassword, textInputLayoutPassword, getString(R.string.error_message_password))) {
+            tvResult.setVisibility(View.VISIBLE);
+            tvResult.setText(getString(R.string.error_message_password));
+            Thread.sleep(Toast.LENGTH_LONG);
+            tvResult.setVisibility(View.INVISIBLE);
             return;
         }
         if (!inputValidation.isInputEditTextMatches(textInputEditTextPassword, textInputEditTextConfirmPassword,
                 textInputLayoutConfirmPassword, getString(R.string.error_password_match))) {
+            tvResult.setVisibility(View.VISIBLE);
+            tvResult.setText(getString(R.string.error_password_match));
+            Thread.sleep(Toast.LENGTH_LONG);
+            tvResult.setVisibility(View.INVISIBLE);
             return;
         }
 
@@ -145,11 +172,19 @@ public class sign_up extends AppCompatActivity implements View.OnClickListener {
 
             // Snack Bar to show success message that record saved successfully
             Snackbar.make(nestedScrollView, getString(R.string.success_message), Snackbar.LENGTH_LONG).show();
+            tvResult.setVisibility(View.VISIBLE);
+            tvResult.setText(getString(R.string.success_message));
+            Thread.sleep(Toast.LENGTH_LONG);
+            tvResult.setVisibility(View.INVISIBLE);
             emptyInputEditText();
 
 
         } else {
             // Snack Bar to show error message that record already exists
+            tvResult.setVisibility(View.VISIBLE);
+            tvResult.setText(getString(R.string.error_email_exists));
+            Thread.sleep(Toast.LENGTH_LONG);
+            tvResult.setVisibility(View.INVISIBLE);
             Snackbar.make(nestedScrollView, getString(R.string.error_email_exists), Snackbar.LENGTH_LONG).show();
         }
 

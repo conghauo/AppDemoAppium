@@ -51,7 +51,6 @@ public class MyDataBase extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_USER_TABLE);
-        addDefault();
     }
 
 
@@ -73,15 +72,16 @@ public class MyDataBase extends SQLiteOpenHelper {
     public  void addDefault ()
     {
         SQLiteDatabase db = this.getWritableDatabase();
+        if (this.getAllUser().isEmpty()==true) {
+            ContentValues values = new ContentValues();
+            Account user = new Account(0, "admin@gmail.com", "Admin", "12345678");
+            values.put(COLUMN_USER_NAME, user.getUserName());
+            values.put(COLUMN_USER_EMAIL, user.getMail());
+            values.put(COLUMN_USER_PASSWORD, user.getPass());
 
-        ContentValues values = new ContentValues();
-        Account user = new Account(0,"admin@gmail.com","Admin","12345678");
-        values.put(COLUMN_USER_NAME, user.getUserName());
-        values.put(COLUMN_USER_EMAIL, user.getMail());
-        values.put(COLUMN_USER_PASSWORD, user.getPass());
-
-        // Inserting Row
-        db.insert(TABLE_USER, null, values);
+            // Inserting Row
+            db.insert(TABLE_USER, null, values);
+        }
         db.close();
     }
     public void addUser(Account user) {

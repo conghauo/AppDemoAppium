@@ -37,7 +37,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
     private InputValidation inputValidation;
     private MyDataBase databaseHelper;
-
+    private TextView tvResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +97,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         appCompatButtonLogin = (AppCompatButton) findViewById(R.id.appCompatButtonLogin);
 
         textViewLinkRegister = (AppCompatTextView) findViewById(R.id.textViewLinkRegister);
-
+        tvResult = (TextView) findViewById(R.id.result);
+        tvResult.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -113,6 +114,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
      */
     private void initObjects() {
         databaseHelper = new MyDataBase(this);
+       // databaseHelper.addDefault();
         inputValidation = new InputValidation(this);
 
     }
@@ -126,7 +128,11 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.appCompatButtonLogin:
-                verifyFromSQLite();
+                try {
+                    verifyFromSQLite();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 break;
             case R.id.textViewLinkRegister:
                 // Navigate to RegisterActivity
@@ -139,21 +145,35 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     /**
      * This method is to validate the input text fields and verify login credentials from SQLite
      */
-    private void verifyFromSQLite() {
+    private void verifyFromSQLite() throws InterruptedException {
         if (!inputValidation.isInputEditTextFilled(textInputEditTextEmail, textInputLayoutEmail, getString(R.string.error_message_email))) {
+            tvResult.setVisibility(View.VISIBLE);
+            tvResult.setText(getString(R.string.error_message_email));
+            Thread.sleep(Toast.LENGTH_LONG);
+            tvResult.setVisibility(View.INVISIBLE);
             return;
         }
         if (!inputValidation.isInputEditTextEmail(textInputEditTextEmail, textInputLayoutEmail, getString(R.string.error_message_email))) {
+            tvResult.setVisibility(View.VISIBLE);
+            tvResult.setText((R.string.error_message_email));
+            Thread.sleep(Toast.LENGTH_LONG);
+            tvResult.setVisibility(View.INVISIBLE);
             return;
         }
-        if (!inputValidation.isInputEditTextFilled(textInputEditTextPassword, textInputLayoutPassword, getString(R.string.error_message_email))) {
+        if (!inputValidation.isInputEditTextFilled(textInputEditTextPassword, textInputLayoutPassword, getString(R.string.error_message_password))) {
+            tvResult.setVisibility(View.VISIBLE);
+            tvResult.setText((R.string.error_message_password));
+            Thread.sleep(Toast.LENGTH_LONG);
+            tvResult.setVisibility(View.INVISIBLE);
             return;
         }
 
         if (databaseHelper.checkUser(textInputEditTextEmail.getText().toString().trim()
                 , textInputEditTextPassword.getText().toString().trim())) {
-
-
+            tvResult.setVisibility(View.VISIBLE);
+            tvResult.setText(getString(R.string.login_message));
+            Thread.sleep(Toast.LENGTH_LONG);
+            tvResult.setVisibility(View.INVISIBLE);
             Intent accountsIntent = new Intent(this, User.class);
             accountsIntent.putExtra("EMAIL", textInputEditTextEmail.getText().toString().trim());
             emptyInputEditText();
@@ -162,6 +182,10 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
         } else {
             // Snack Bar to show success message that record is wrong
+            tvResult.setText(getString(R.string.error_valid_email_password));
+            tvResult.setVisibility(View.VISIBLE);
+            Thread.sleep(Toast.LENGTH_LONG);
+            tvResult.setVisibility(View.INVISIBLE);
             Snackbar.make(nestedScrollView, getString(R.string.error_valid_email_password), Snackbar.LENGTH_LONG).show();
         }
     }

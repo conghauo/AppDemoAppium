@@ -106,6 +106,13 @@
             android:gravity="center"
             android:text="Already a member? Login"
             android:textSize="16dp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/result"
+            android:text=""
+            android:textSize="16dp"
+            android:gravity="center"/>
     </android.support.v7.widget.LinearLayoutCompat>
 
 </android.support.v4.widget.NestedScrollView>
